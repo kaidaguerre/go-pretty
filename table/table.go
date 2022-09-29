@@ -108,6 +108,10 @@ type Table struct {
 	suppressEmptyColumns bool
 	// title contains the text to appear above the table
 	title string
+	// if set, this will be used for overrideMaxColumnLengths instead of calculating them
+	overrideMaxColumnLengths []int
+	hideTopBorder            bool
+	hideBottomBorder         bool
 }
 
 // AppendFooter appends the row to the List of footers to render.
@@ -294,6 +298,26 @@ func (t *Table) Style() *Style {
 // regular rows.
 func (t *Table) SuppressEmptyColumns() {
 	t.suppressEmptyColumns = true
+}
+
+func (t *Table) MaxColumnLengths() []int {
+	return t.maxColumnLengths
+}
+
+func (t *Table) SetMaxColumnLengths(maxColumnLengths []int) {
+	t.overrideMaxColumnLengths = maxColumnLengths
+}
+
+func (t *Table) MaxRowLength() int {
+	return t.maxRowLength
+}
+
+func (t *Table) HideTopBorder(hide bool) {
+	t.hideTopBorder = hide
+}
+
+func (t *Table) HideBottomBorder(hide bool) {
+	t.hideBottomBorder = hide
 }
 
 func (t *Table) analyzeAndStringify(row Row, hint renderHint) rowStr {
@@ -667,10 +691,15 @@ func (t *Table) initForRenderColumnConfigs() {
 }
 
 func (t *Table) initForRenderColumnLengths() {
-	t.maxColumnLengths = make([]int, t.numColumns)
-	t.parseRowForMaxColumnLengths(t.rowsHeader)
-	t.parseRowForMaxColumnLengths(t.rows)
-	t.parseRowForMaxColumnLengths(t.rowsFooter)
+	// if maxColumnLengths have already been set, do nothing
+	if t.overrideMaxColumnLengths != nil {
+		t.maxColumnLengths = t.overrideMaxColumnLengths
+	} else {
+		t.maxColumnLengths = make([]int, t.numColumns)
+		t.parseRowForMaxColumnLengths(t.rowsHeader)
+		t.parseRowForMaxColumnLengths(t.rows)
+		t.parseRowForMaxColumnLengths(t.rowsFooter)
+	}
 
 	// restrict the column lengths if any are over or under the limits
 	for colIdx := range t.maxColumnLengths {

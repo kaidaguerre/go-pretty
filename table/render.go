@@ -9,15 +9,16 @@ import (
 )
 
 // Render renders the Table in a human-readable "pretty" format. Example:
-//  ┌─────┬────────────┬───────────┬────────┬─────────────────────────────┐
-//  │   # │ FIRST NAME │ LAST NAME │ SALARY │                             │
-//  ├─────┼────────────┼───────────┼────────┼─────────────────────────────┤
-//  │   1 │ Arya       │ Stark     │   3000 │                             │
-//  │  20 │ Jon        │ Snow      │   2000 │ You know nothing, Jon Snow! │
-//  │ 300 │ Tyrion     │ Lannister │   5000 │                             │
-//  ├─────┼────────────┼───────────┼────────┼─────────────────────────────┤
-//  │     │            │ TOTAL     │  10000 │                             │
-//  └─────┴────────────┴───────────┴────────┴─────────────────────────────┘
+//
+//	┌─────┬────────────┬───────────┬────────┬─────────────────────────────┐
+//	│   # │ FIRST NAME │ LAST NAME │ SALARY │                             │
+//	├─────┼────────────┼───────────┼────────┼─────────────────────────────┤
+//	│   1 │ Arya       │ Stark     │   3000 │                             │
+//	│  20 │ Jon        │ Snow      │   2000 │ You know nothing, Jon Snow! │
+//	│ 300 │ Tyrion     │ Lannister │   5000 │                             │
+//	├─────┼────────────┼───────────┼────────┼─────────────────────────────┤
+//	│     │            │ TOTAL     │  10000 │                             │
+//	└─────┴────────────┴───────────┴────────┴─────────────────────────────┘
 func (t *Table) Render() string {
 	t.initForRender()
 
@@ -320,6 +321,9 @@ func (t *Table) renderRows(out *strings.Builder, rows []rowStr, hint renderHint)
 }
 
 func (t *Table) renderRowsBorderBottom(out *strings.Builder) {
+	if t.hideBottomBorder {
+		return
+	}
 	if len(t.rowsFooter) > 0 {
 		t.renderRowSeparator(out, renderHint{isBorderBottom: true, isFooterRow: true, rowNumber: len(t.rowsFooter)})
 	} else {
@@ -328,6 +332,9 @@ func (t *Table) renderRowsBorderBottom(out *strings.Builder) {
 }
 
 func (t *Table) renderRowsBorderTop(out *strings.Builder) {
+	if t.hideTopBorder {
+		return
+	}
 	if len(t.rowsHeader) > 0 || t.autoIndex {
 		t.renderRowSeparator(out, renderHint{isBorderTop: true, isHeaderRow: true, rowNumber: 0})
 	} else {

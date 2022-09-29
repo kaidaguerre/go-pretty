@@ -33,6 +33,12 @@ type Writer interface {
 	Style() *Style
 	SuppressEmptyColumns()
 
+	MaxColumnLengths() []int
+	MaxRowLength() int
+	SetMaxColumnLengths(maxColumnLengths []int)
+	HideTopBorder(bool)
+	HideBottomBorder(bool)
+
 	// deprecated; in favor of Style().HTML.CSSClass
 	SetHTMLCSSClass(cssClass string)
 }
